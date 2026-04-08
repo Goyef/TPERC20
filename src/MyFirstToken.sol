@@ -17,20 +17,17 @@ contract MyFirstToken {
     // --- État ERC20 --- 
     uint256 public totalSupply; 
     mapping(address => uint256) private _balances; 
-    mapping(address => mapping(address => uint256)) private _allowances; 
+    mapping(address => mapping(address => uint256)) internal _allowances; 
     // --- Events --- 
-    event Transfer(address indexed from, address indexed to, uint256 
-value); 
-    event Approval(address indexed owner, address indexed spender, uint256 
-value); 
+    event Transfer(address indexed from, address indexed to, uint256 value); 
+    event Approval(address indexed owner, address indexed spender, uint256 value); 
     /** 
      * @notice Constructeur — mint la supply initiale au déployeur 
      * @param _name Nom du token (ex: "My First Token") 
      * @param _symbol Symbole du token (ex: "MFT") 
      * @param _initialSupply Nombre de tokens à créer (en unités, pas en wei) 
      */ 
-    constructor(string memory _name, string memory _symbol, uint256 
-_initialSupply) { 
+    constructor(string memory _name, string memory _symbol, uint256 _initialSupply) { 
         name = _name; 
         symbol = _symbol; 
         decimals = 18; 
@@ -54,7 +51,7 @@ _initialSupply) {
      * @dev Doit retourner true en cas de succès 
 
      */ 
-    function transfer(address to, uint256 amount) external returns (bool) 
+    function transfer(address to, uint256 amount) public virtual returns (bool) 
 { 
          require(to != address(0), "Transfer to zero address"); 
     require(_balances[msg.sender] >= amount, "Insufficient balance"); 
@@ -90,8 +87,7 @@ returns (uint256) {
      * @dev Nécessite que msg.sender ait une allowance suffisante 
      * @dev Doit décrémenter l'allowance 
      */ 
-    function transferFrom(address from, address to, uint256 amount) 
-external returns (bool) { 
+    function transferFrom(address from, address to, uint256 amount) public virtual returns (bool) { 
         // TODO: implémenter transferFrom 
         // Vérifications : 
         // - _allowances[from][msg.sender] >= amount 
