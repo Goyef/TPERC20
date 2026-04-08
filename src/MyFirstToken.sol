@@ -37,16 +37,15 @@ _initialSupply) {
         // Mint la supply initiale au déployeur 
         _mint(msg.sender, _initialSupply * 10**decimals); 
     } 
-    // 
-───────────────────────────────────────────────────────────────────────── 
+    // ================================================================
     // Fonctions ERC20 à implémenter 
-    // 
-───────────────────────────────────────────────────────────────────────── 
+    // ================================================================
     /** 
      * @notice Retourne le solde d'une adresse 
      */ 
     function balanceOf(address account) external view returns (uint256) { 
         // TODO: retourner le solde de 'account' 
+            return _balances[account]; 
     } 
     /** 
      * @notice Transfère 'amount' tokens vers 'to' 
@@ -57,12 +56,12 @@ _initialSupply) {
      */ 
     function transfer(address to, uint256 amount) external returns (bool) 
 { 
-        // TODO: implémenter le transfert depuis msg.sender vers 'to' 
-        // Vérifications à faire : 
-        // - to != address(0) 
-        // - _balances[msg.sender] >= amount 
-        // Mettre à jour les soldes 
-        // Émettre Transfer(msg.sender, to, amount) 
+         require(to != address(0), "Transfer to zero address"); 
+    require(_balances[msg.sender] >= amount, "Insufficient balance"); 
+    _balances[msg.sender] -= amount; 
+    _balances[to] += amount; 
+    emit Transfer(msg.sender, to, amount); 
+    return true; 
     } 
     /** 
      * @notice Retourne la quantité que 'spender' peut dépenser au nom de 
@@ -71,6 +70,7 @@ _initialSupply) {
     function allowance(address owner, address spender) external view 
 returns (uint256) { 
         // TODO: retourner l'allowance 
+        return _allowances[owner][spender]; 
     } 
     /** 
      * @notice Autorise 'spender' à dépenser 'amount' tokens 
@@ -81,6 +81,9 @@ returns (uint256) {
         // TODO: implémenter l'approbation 
         // Mettre à jour _allowances[msg.sender][spender] 
         // Émettre Approval(msg.sender, spender, amount) 
+        _allowances[msg.sender][spender] = amount; 
+        emit Approval(msg.sender, spender, amount); 
+        return true; 
     } 
     /** 
      * @notice Transfère 'amount' tokens de 'from' vers 'to' 
@@ -97,12 +100,21 @@ external returns (bool) {
         // Décrémenter l'allowance 
         // Mettre à jour les soldes 
         // Émettre Transfer(from, to, amount) 
+        require(from != address(0), "Transfer from zero address"); 
+    require(to != address(0), "Transfer to zero address"); 
+    require(_balances[from] >= amount, "Insufficient balance"); 
+    require(_allowances[from][msg.sender] >= amount, "Insufficient allowance"); 
+
+    _allowances[from][msg.sender] -= amount; 
+    _balances[from] -= amount; 
+    _balances[to] += amount; 
+
+    emit Transfer(from, to, amount); 
+    return true; 
     } 
-    // 
-───────────────────────────────────────────────────────────────────────── 
+    // ================================================================
     // Fonctions internes 
-    // 
-───────────────────────────────────────────────────────────────────────── 
+    // ================================================================
     /** 
      * @notice Crée 'amount' tokens et les assigne à 'to' 
      * @dev Augmente totalSupply 

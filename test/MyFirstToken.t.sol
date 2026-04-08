@@ -62,10 +62,9 @@ ether);
         bool success = token.transferFrom(address(this), bob, 200 ether); 
         assertTrue(success); 
         assertEq(token.balanceOf(bob), 200 ether); 
-        assertEq(token.balanceOf(address(this)), 1_000_000 ether - 200 
-ether); - 200 
+        assertEq(token.balanceOf(address(this)), 1_000_000 ether - 200 ether); 
+        assertEq(token.allowance(address(this), alice), 300 ether); // 500 - 200 
     } 
-        assertEq(token.allowance(address(this), alice), 300 ether); // 500 
     function test_TransferFrom_RevertSansAllowance() public { 
         vm.prank(alice); 
         vm.expectRevert(); 
